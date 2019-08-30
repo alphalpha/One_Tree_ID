@@ -101,14 +101,14 @@ void loop() {
 void update_display() {
   u8g2.firstPage();
   do {
-    u8g2.setFont(u8g2_font_t0_11_mf);
+    u8g2.setFont(u8g2_font_t0_12_mf);
     u8g2.setCursor(0, 10);
     u8g2.print(TITLE);
-    u8g2.setCursor(0, 27);
+    u8g2.setCursor(0, 30);
     u8g2.print(TREE);
-    u8g2.setCursor(0, 44);
+    u8g2.setCursor(0, 45);
     u8g2.print("Linz, AT, " + started_at.timestamp(DateTime::TIMESTAMP_DATE));
-    u8g2.setCursor(0, 61);
+    u8g2.setCursor(0, 60);
     if (!is_init_state) {
       if (show_time) {
         u8g2.print("Start: " + started_at.timestamp(DateTime::TIMESTAMP_TIME));
