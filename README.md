@@ -4,5 +4,4 @@ Arduino sketch that implements the user interface of [*One Tree ID - How to Beco
 ## Dependencies
 To compile the sketch the following libraries have to be installed via the Library Manager of the Arduino IDE:
 - [RTClib](https://github.com/adafruit/Adafruit-GFX-Library)
-- [Adafruit SSD1306](https://github.com/adafruit/Adafruit_SSD1306)
-- [Adafruit GFX Library](https://github.com/adafruit/RTClib)
+- [U8g2](https://github.com/olikraus/u8g2)

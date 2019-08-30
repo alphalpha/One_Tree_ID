@@ -1,13 +1,8 @@
-#include <Adafruit_GFX.h>
-#include <Adafruit_SSD1306.h>
+#include <U8g2lib.h>
 #include <RTClib.h>
 #include <Wire.h>
 
-#define SCREEN_WIDTH 128 // OLED display width, in pixels
-#define SCREEN_HEIGHT 64 // OLED display height, in pixels
-
-// Declaration for an SSD1306 display connected to I2C (SDA, SCL pins)
-Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, -1);
+U8G2_SH1106_128X64_NONAME_1_HW_I2C u8g2(U8G2_R0, /* reset=*/ U8X8_PIN_NONE);
 
 RTC_DS1307 rtc;
 
@@ -21,7 +16,7 @@ const int START_TONE = 880; // In Hz
 const int STOP_TONE = 659; // In Hz
 
 const auto TITLE = "One Tree ID";
-const auto TREE = "Pinus Nigra";
+const auto TREE = "Black Pine";
 
 
 //////////////////////////////////////
@@ -53,12 +48,7 @@ void setup() {
   updated_at = started_at;
 
   // Set Up Display
-  if (!display.begin(SSD1306_SWITCHCAPVCC, 0x3C)) { // Address 0x3D for 128x64
-    Serial.println(F("SSD1306 allocation failed"));
-    while(1);
-  }
-  delay(2000);
-  //  display.setFont(&Roboto_Mono_Light_8);
+  u8g2.begin();
 
   pinMode(PIEZO_PIN, OUTPUT);
 
@@ -109,26 +99,23 @@ void loop() {
 }
 
 void update_display() {
-  display.clearDisplay();
-//  display.setTextSize(1);
-  display.setTextColor(WHITE);
-  display.setCursor(0, 10);
-  display.print(TITLE);
-  
-  display.setCursor(0, 25);
-  display.print(TREE);
-  
-  display.setCursor(0, 40);
-  display.print("Linz, AT, " + started_at.timestamp(DateTime::TIMESTAMP_DATE));
-  
-  display.setCursor(0, 55);
-  if (!is_init_state) {
-    if (show_time) {
-      display.print("Start: " + started_at.timestamp(DateTime::TIMESTAMP_TIME));
-    } else {
-      display.print("Experiment No. " + String(counter));
+  u8g2.firstPage();
+  do {
+    u8g2.setFont(u8g2_font_t0_11_mf);
+    u8g2.setCursor(0, 10);
+    u8g2.print(TITLE);
+    u8g2.setCursor(0, 27);
+    u8g2.print(TREE);
+    u8g2.setCursor(0, 44);
+    u8g2.print("Linz, AT, " + started_at.timestamp(DateTime::TIMESTAMP_DATE));
+    u8g2.setCursor(0, 61);
+    if (!is_init_state) {
+      if (show_time) {
+        u8g2.print("Start: " + started_at.timestamp(DateTime::TIMESTAMP_TIME));
+      } else {
+        u8g2.print("Experiment No. " + String(counter));
+      }
     }
-  }  
-  display.display();
+  } while( u8g2.nextPage() );
   Serial.println("UPDATE DISPLAY");
 }
