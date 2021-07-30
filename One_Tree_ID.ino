@@ -16,7 +16,7 @@ const int START_TONE = 880; // In Hz
 const int STOP_TONE = 659; // In Hz
 
 const auto TITLE = "One Tree ID";
-const auto TREE = "Black Pine";
+const auto TREE = "Pinus Sylvestris";
 
 
 //////////////////////////////////////
@@ -33,10 +33,12 @@ bool stop_button_pressed = false;
 void setup() {
   Serial.begin(9600);
 
-  // Set Up Clock
+  u8g2.begin();
+
   if (!rtc.begin()) {
     Serial.println("Couldn't find RTC");
-    while(1);
+    Serial.flush();
+    abort();
   }
 
   if (!rtc.isrunning()) {
@@ -46,9 +48,7 @@ void setup() {
 
   started_at = rtc.now();
   updated_at = started_at;
-
-  // Set Up Display
-  u8g2.begin();
+  Serial.println(String("DEVICE STARTED AT:\t")+started_at.timestamp(DateTime::TIMESTAMP_FULL));
 
   pinMode(PIEZO_PIN, OUTPUT);
 
@@ -57,12 +57,12 @@ void setup() {
 }
 
 void loop() {
-  const auto current_time = rtc.now();
+  auto current_time = rtc.now();
   const auto start_button_pressed = !digitalRead(START_BUTTON_PIN);
   const auto stop_button_pressed = !digitalRead(STOP_BUTTON_PIN);
   
   if (start_button_pressed && !started) {
-    Serial.println("START BUTTON PRESSED");
+    Serial.println(String("START BUTTON PRESSED AT:\t")+current_time.timestamp(DateTime::TIMESTAMP_FULL));
     started_at = current_time;
     updated_at = started_at;
     ++counter;
@@ -79,7 +79,7 @@ void loop() {
   }
 
   if (stop_button_pressed && !stopped) {
-    Serial.println("STOP BUTTON PRESSED");
+    Serial.println(String("STOP BUTTON PRESSED AT:\t")+current_time.timestamp(DateTime::TIMESTAMP_FULL));
     stopped = true;
 
     tone(PIEZO_PIN, STOP_TONE, 200);
@@ -95,19 +95,21 @@ void loop() {
     update_display();
     Serial.println();
   }
+ 
   delay(100);
 }
 
 void update_display() {
+  Wire.end();
+  u8g2.setFont(u8g2_font_t0_12_mf);
   u8g2.firstPage();
   do {
-    u8g2.setFont(u8g2_font_t0_12_mf);
     u8g2.setCursor(0, 10);
     u8g2.print(TITLE);
     u8g2.setCursor(0, 30);
     u8g2.print(TREE);
     u8g2.setCursor(0, 45);
-    u8g2.print("Linz, AT, " + started_at.timestamp(DateTime::TIMESTAMP_DATE));
+    u8g2.print("Moscow, " + started_at.timestamp(DateTime::TIMESTAMP_DATE));
     u8g2.setCursor(0, 60);
     if (!is_init_state) {
       if (show_time) {
@@ -117,5 +119,6 @@ void update_display() {
       }
     }
   } while( u8g2.nextPage() );
-  Serial.println("UPDATE DISPLAY");
+  Wire.begin();
+  Serial.println(String("DISPLAY UPDATED AT:\t")+updated_at.timestamp(DateTime::TIMESTAMP_FULL));
 }
