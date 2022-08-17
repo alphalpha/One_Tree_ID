@@ -7,6 +7,7 @@ U8G2_SH1106_128X64_NONAME_1_HW_I2C u8g2(U8G2_R0, /* reset=*/ U8X8_PIN_NONE);
 RTC_DS1307 rtc;
 
 ////// CONFIG ////////////////////////
+// Monitor SDA = A4, SCL = A5
 const int PIEZO_PIN = 11;
 const int START_BUTTON_PIN = 8;
 const int STOP_BUTTON_PIN = 9;
@@ -16,7 +17,8 @@ const int START_TONE = 880; // In Hz
 const int STOP_TONE = 659; // In Hz
 
 const auto TITLE = "One Tree ID";
-const auto TREE = "Pinus Sylvestris";
+const auto TREE = "Ginkgo Biloba";
+const auto LOCATION = "Esch";
 
 
 //////////////////////////////////////
@@ -109,7 +111,7 @@ void update_display() {
     u8g2.setCursor(0, 30);
     u8g2.print(TREE);
     u8g2.setCursor(0, 45);
-    u8g2.print("Moscow, " + started_at.timestamp(DateTime::TIMESTAMP_DATE));
+    u8g2.print(String(LOCATION) + ", " + started_at.timestamp(DateTime::TIMESTAMP_DATE));
     u8g2.setCursor(0, 60);
     if (!is_init_state) {
       if (show_time) {
